@@ -18,14 +18,11 @@ $fsw = New-Object IO.FileSystemWatcher $folder, $filter -Property @{
 }
 
 $onCreated = Register-ObjectEvent $fsw Created -SourceIdentifier OnMiniScanStored -Action {
-    $obj = {
+    $obj = @{
         Path = $Event.SourceEventArgs.FullPath
         Name = $Event.SourceEventArgs.Name
         ChangeType = $Event.SourceEventArgs.ChangeType
         TimeStamp = $Event.TimeGenerated
     }
-    
-    if ($name -match ".{2,}`.mini") {
-        Rename-Item -Path $obj.Path -NewName $obj.Path.Replace("`.mini", ".miniscn")
-    }
+    Rename-Item -Path $obj.Path -NewName $obj.Path.Replace("`.mini", ".miniscn")
 }

@@ -1,1 +1,2 @@
 # LDMSPowershellTools
+This is a repository to house various scripts to help address certain issues and workarounds. Each script should contain a description that lists what the purpose of that script is as well as anything else you'd need to know about how or why'd you use a particular script.

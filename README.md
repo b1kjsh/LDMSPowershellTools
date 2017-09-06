@@ -1,7 +1,5 @@
 # LDMSPowershellTools
-<<<<<<< HEAD
 This is a repository to house various scripts to help address certain issues and workarounds. Each script should contain a description that lists what the purpose of that script is as well as anything else you'd need to know about how or why'd you use a particular script.
-=======
 
 
 * ### ChangeNetVersion.ps1
@@ -18,6 +16,8 @@ This is a repository to house various scripts to help address certain issues and
 * ### EnumerateAllPrograms.ps1
   * Runs through the Uninstall registry key and outputs data about the installed program and the regkey used to identify it
 
+* ### RenameMiniFiles.ps1
+  * Listens to file creation events in the LDScan folder and if any .mini files are created they are renamed to .miniscn so that the inventory server can process them.
 
 
->>>>>>> 15e9b0329b19d4c7f3f24818aae8a16b56c7bd44
+

@@ -8,7 +8,7 @@
         Get-EventSubscriber
     If you feel that you need to remove the event for whatever reason you can do so with the following command
         Unregister-Event -SourceIdentifier OnMiniScanStored
-    Once you have ran this script successfully then you can enable Store Scans in your Advanced Inventory settings.
+    
 #>
 $folder = "$env:LDMS_HOME\LDScan"
 $filter = '*.mini'

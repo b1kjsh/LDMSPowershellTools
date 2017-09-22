@@ -51,7 +51,7 @@ $array2 = @()
 
     #Set name of computer to check
 
-    $computername= "localhost" 
+    $computername= $env:COMPUTERNAME
 
     #Define the variable to hold the location of Currently Installed Programs
 

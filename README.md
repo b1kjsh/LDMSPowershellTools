@@ -6,7 +6,7 @@ This is a repository to house various scripts to help address certain issues and
   * Changes .NET version registry keys to mimic .NET 4.6.2. Accepts install, restore and delete as arguments. 
   
 * ### ChromeExt.ps1
-  * Creates LDChromeExt wmi class and creates instances with information about locally installed chrome extensions
+  * Creates LDChromeExtension wmi class and creates instances with information about locally installed chrome extensions
   
 * ### CreateClasses.ps1
   * Creates LDNetworkDrive and LDLocalShare wmi classes. Used in conjunction with GetSharesAndDrives

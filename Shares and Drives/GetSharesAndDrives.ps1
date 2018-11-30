@@ -1,4 +1,4 @@
-﻿[cmdletbinding()] 
+[cmdletbinding()] 
 
  
 param([Parameter(ValueFromPipeline=$True, 
@@ -11,7 +11,14 @@ $users = Get-ChildItem $parentdir
 
 
 
-if(Get-WmiObject -List | where { $_.Name -ne "LDNetworkDrive"}){
+if(Get-WmiObject -List | where { $_.Name -eq "LDNetworkDrive"}){
+
+#Clear existing entries to re-enumerate
+Get-WmiObject LDNetworkDrive | Remove-WmiObject
+      
+}
+else{
+
 $newClass = New-Object System.Management.ManagementClass `
             ("root\cimv2", [String]::Empty, $null); 
 
@@ -35,16 +42,17 @@ $newClass = New-Object System.Management.ManagementClass `
         $newClass.Properties["User"].Qualifiers.Add("Key", $true)
 
         
-        $newClass.Put()          
-}
-else{
-
-#Clear existing entries to re-enumerate
-Get-WmiObject LDNetworkDrive | Remove-WmiObject
+        $newClass.Put()    
      
 }
 
-if(Get-WmiObject -List | where { $_.Name -ne "LDLocalShare"}){
+if(Get-WmiObject -List | where { $_.Name -eq "LDLocalShare"}){
+
+#Clear existing entries to re-enumerate
+Get-WmiObject LDLocalShare | Remove-WmiObject
+          
+}
+else{
 
 
 $newClass = New-Object System.Management.ManagementClass `
@@ -71,12 +79,6 @@ $newClass = New-Object System.Management.ManagementClass `
 
         
         $newClass.Put()
-          
-}
-else{
-
-#Clear existing entries to re-enumerate
-Get-WmiObject LDLocalShare | Remove-WmiObject
      
 }    
 
@@ -85,10 +87,7 @@ $shares = gwmi -Class win32_share -ComputerName $computer | select -ExpandProper
   
 foreach ($share in $shares) { 
 
-
 $sharename = $share | Out-String
-
-
 
 try {  
 
@@ -186,8 +185,12 @@ function Get-MappedDrives($ComputerName){
     $sessions = Get-WmiObject -ComputerName $ComputerName -Class win32_process | ?{$_.name -eq "explorer.exe"}
 
     if($sessions){
+    $counter = 0
 
-      foreach($explorer in $sessions){
+      $explorer = $sessions[0]
+
+      #if($counter -gt 1){ break }
+      
         $sid = ($explorer.GetOwnerSid()).sid
 
         $owner  = $explorer.GetOwner()
@@ -195,6 +198,8 @@ function Get-MappedDrives($ComputerName){
         $RegProv = get-WmiObject -List -Namespace "root\default" -ComputerName $ComputerName | Where-Object {$_.Name -eq "StdRegProv"}
 
         $DriveList = $RegProv.EnumKey($Hive, "$($sid)\Network")
+
+        $counter++
 
         if($DriveList.sNames.count -gt 0){
 
@@ -204,13 +209,11 @@ function Get-MappedDrives($ComputerName){
 
           }
 
-        }else{write-debug "No mapped drives on $($ComputerName)"}
+        }else{write-host "No mapped drives on $($ComputerName)"}
 
-      }
+    }else{write-host "explorer.exe not running on $($ComputerName)"}
 
-    }else{write-debug "explorer.exe not running on $($ComputerName)"}
-
-  }else{write-debug "Can't connect to $($ComputerName)"}
+  }else{write-host "Can't connect to $($ComputerName)"}
 
   return $output
 }
@@ -219,6 +222,8 @@ try{
 
 
 $mappeddrives = Get-MappedDrives($env:COMPUTERNAME)
+
+    write-host $mappeddrives
 
     foreach($drive in $mappeddrives){
 
@@ -230,14 +235,15 @@ $mappeddrives = Get-MappedDrives($env:COMPUTERNAME)
 
     #$path = $path.substring(0, ($path.indexof('`t') - 1))
 
-    $user = $path.Substring($path.IndexOf("\", 2), ($path.Length - $path.IndexOf("\", 2)))
+    $userStartIndex = $path.IndexOf("`t") + 1
+
+    $userEndIndex = $path.Length - ($path.IndexOf("`t'") + 1)
+
+    $user = $path.Substring($userStartIndex, $userEndIndex - $userStartIndex)
 
     $user = $user -replace '[^a-zA-Z0-9]', ' '
 
     $user = $user.Trim()
-
-    $user = $user.substring($user.indexof(' '), $user.length - $user.IndexOf(" ")).trim()
-
 
     $path = $path.substring(0, ($path.length - $user.length)).trim()
 
@@ -265,11 +271,3 @@ catch
 {
 Write-output $_.exception | format-list -force
 }
-
-
-
-
-
-
-
-
